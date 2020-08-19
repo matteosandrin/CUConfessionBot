@@ -1,0 +1,4 @@
+facebook-scraper==0.2.9
+tweepy==3.9.0
+WeasyPrint==51
+python-dotenv==0.14.0
