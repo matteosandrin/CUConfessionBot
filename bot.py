@@ -31,7 +31,7 @@ class CCTwitterBot:
         consumer_secret = os.getenv('CONSUMER_SECRET')
         access_token = os.getenv('ACCESS_TOKEN')
         access_token_secret = os.getenv('ACCESS_TOKEN_SECRET')
-        
+
         if (consumer_key is None) or (len(consumer_key) == 0):
             self.log('The consumer_key is missing from the ".env" file', isError=True)
             return
@@ -78,19 +78,6 @@ class CCTwitterBot:
         posts = [p for p in posts if p['post_id'] not in self.state]
         self.log('Successfully retrieved {} new posts'.format(len(posts)))
         return posts
-        
-    def extractConfessions(self, post: dict) -> List[str]:
-        text = post['text']
-        matches = list(re.finditer(r'([\r\n]+|^)(\d{4,7})(\.)', text))
-        confessions = []
-        for i, m in enumerate(matches):
-            start = m.start(2)
-            end = len(text)
-            if i+1 < len(matches):
-                end = matches[i+1].start(2)
-            num = text[m.start(2):m.end(2)]
-            confessions.append((num, text[start:end].strip()))
-        return confessions
 
     def isConfession(self, post):
         text = post['text']
