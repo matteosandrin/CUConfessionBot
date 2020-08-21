@@ -53,7 +53,7 @@ class CCTwitterBot:
 
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
-        self.api = tweepy.API(auth)
+        self.api = tweepy.API(auth, wait_on_rate_limit=True, wait_on_rate_limit_notify=True)
 
     def loadState(self, path: str = None):
         """
@@ -121,7 +121,7 @@ class CCTwitterBot:
     def tweetImg(self, imgFile, post):
         """Tweet an image with the Twitter API"""
         self.log('Sending tweet')
-        self.api.update_with_media(self.absolutePath('test.png'), post['post_url'], file=imgFile)
+        self.api.update_with_media(self.absolutePath('test.png'), post['post_url'], file=imgFile, )
         self.log('Successuflly sent tweet')
 
 
