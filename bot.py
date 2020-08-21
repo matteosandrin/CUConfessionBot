@@ -91,7 +91,7 @@ class CCTwitterBot:
     def getNewPosts(self):
         """Scrape the Facebook page for new posts, and filter out previously seen posts"""
         self.log('Retrieving new posts')
-        posts = fb.get_posts(self.pageName, pages=3)
+        posts = fb.get_posts(self.pageName, pages=5)
         posts = [p for p in posts if p['post_id'] not in self.state]
         self.log('Successfully retrieved {} new posts'.format(len(posts)))
         return posts
