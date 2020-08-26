@@ -102,6 +102,15 @@ class CCTwitterBot:
         matches = list(re.finditer(r'([\r\n]+|^)(\d{4,7})(\.)', text))
         return len(matches) > 0
 
+    def deEmojify(self, text):
+        regrex_pattern = re.compile(pattern = "["
+            u"\U0001F600-\U0001F64F"  # emoticons
+            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+            u"\U0001F680-\U0001F6FF"  # transport & map symbols
+            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                            "]+", flags = re.UNICODE)
+        return regrex_pattern.sub(r'',text)
+
     def convertToImg(self, confession: str):
         """Render the confession text into an HTML page and convert it to a PNG image"""
         text = confession.replace('\n', '<br>')
@@ -115,15 +124,13 @@ class CCTwitterBot:
                     page._page_box.height = child.height
                     page.height = child.height
         imgBytes, _ , _ = html.write_png(None, resolution=150)
-        return io.BytesIO(imgBytes)
-        
+        return io.BytesIO(imgBytes)  
 
     def tweetImg(self, imgFile, post):
         """Tweet an image with the Twitter API"""
         self.log('Sending tweet')
         self.api.update_with_media(self.absolutePath('test.png'), post['post_url'], file=imgFile, )
         self.log('Successuflly sent tweet')
-
 
     def process(self):
         self.log('Starting at {}'.format(datetime.now().isoformat()))
@@ -138,7 +145,8 @@ class CCTwitterBot:
         for post in newPosts[::-1]:
             try:
                 if self.isConfession(post):
-                    imgFile = self.convertToImg(post['text'])
+                    text = self.deEmojify(post['text'])
+                    imgFile = self.convertToImg(text)
                     self.tweetImg(imgFile, post)
                     time.sleep(1)
                 self.updateState(post)
