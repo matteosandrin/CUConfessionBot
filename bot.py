@@ -49,19 +49,19 @@ class CCTwitterBot:
         access_token_secret = os.getenv('ACCESS_TOKEN_SECRET')
 
         if (consumer_key is None) or (len(consumer_key) == 0):
-            self.log('The consumer_key is missing from the ".env" file', isError=True)
+            CCTwitterBot.log('The consumer_key is missing from the ".env" file', isError=True)
             self.api = None
             return
         if (consumer_secret is None) or (len(consumer_secret) == 0):
-            self.log('The consumer_secret is missing from the ".env" file', isError=True)
+            CCTwitterBot.log('The consumer_secret is missing from the ".env" file', isError=True)
             self.api = None
             return
         if (access_token is None) or (len(access_token) == 0):
-            self.log('The access_token is missing from the ".env" file', isError=True)
+            CCTwitterBot.log('The access_token is missing from the ".env" file', isError=True)
             self.api = None
             return
         if (access_token_secret is None) or (len(access_token_secret) == 0):
-            self.log('The access_token_secret is missing from the ".env" file', isError=True)
+            CCTwitterBot.log('The access_token_secret is missing from the ".env" file', isError=True)
             self.api = None
             return
 
@@ -104,10 +104,10 @@ class CCTwitterBot:
 
     def getNewPosts(self):
         """Scrape the Facebook page for new posts, and filter out previously seen posts"""
-        self.log('Retrieving new posts')
+        CCTwitterBot.log('Retrieving new posts')
         posts = fb.get_posts(self.pageName, pages=5)
         posts = [p for p in posts if p['post_id'] not in self.state]
-        self.log('Successfully retrieved {} new posts'.format(len(posts)))
+        CCTwitterBot.log('Successfully retrieved {} new posts'.format(len(posts)))
         return posts
 
     def isConfession(self, post):
@@ -142,19 +142,19 @@ class CCTwitterBot:
 
     def tweetImg(self, imgFile, post):
         """Tweet an image with the Twitter API"""
-        self.log('Sending tweet')
+        CCTwitterBot.log('Sending tweet')
         # self.api.update_with_media(CCTwitterBot.absolutePath('test.png'), post['post_url'], file=imgFile, )
-        self.log('Successuflly sent tweet')
+        CCTwitterBot.log('Successuflly sent tweet')
 
     def process(self):
-        self.log('Starting at {}'.format(datetime.now().isoformat()))
+        CCTwitterBot.log('Starting at {}'.format(datetime.now().isoformat()))
         try:
             newPosts = self.getNewPosts()
         except:
-            self.log('ERROR: Failed to retrieve new posts', isError=True)
+            CCTwitterBot.log('ERROR: Failed to retrieve new posts', isError=True)
             return
         if self.api is None:
-            self.log('ERROR: The API is not setup correctly', isError=True)
+            CCTwitterBot.log('ERROR: The API is not setup correctly', isError=True)
             return
         for post in newPosts[::-1]:
             try:
@@ -165,7 +165,7 @@ class CCTwitterBot:
                     time.sleep(1)
                 self.updateState(post)
             except:
-                self.log('ERROR: Failed to send tweet', isError=True)
+                CCTwitterBot.log('ERROR: Failed to send tweet', isError=True)
                 break
 
 if __name__ == "__main__":
