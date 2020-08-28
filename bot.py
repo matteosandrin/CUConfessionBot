@@ -14,20 +14,34 @@ class CCTwitterBot:
 
     def __init__(self):
         self.pageName = 'columbiaconfessionz'
-        self.absolutePath = lambda local: os.path.join(os.path.dirname(os.path.realpath(__file__)), local)
-        self.template = open(self.absolutePath('template.html')).read()
+        self.template = open(CCTwitterBot.absolutePath('template.html')).read()
         self.loadState()
         self.setupApi()
 
-    def log(self, text, isError=False):
+    @staticmethod
+    def absolutePath(path):
+        return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
+
+    @staticmethod
+    def log(text, isError=False):
+        logFile = open(CCTwitterBot.absolutePath('bot.log'), 'a')
         if isError:
-            print('[!] ' + text)
+            print('[!] ' + text, file=logFile)
         else:
-            print('[+] ' + text)
+            print('[+] ' + text, file=logFile)
+        logFile.close()
+
+    @staticmethod
+    def getLogs():
+        path = CCTwitterBot.absolutePath('bot.log')
+        if not os.path.exists(path):
+            return ''
+        logFile = open(path, 'r')
+        return logFile.read()
 
     def setupApi(self):
         """Load credentials from .env file and setup Twitter API"""
-        dotenv.load_dotenv(self.absolutePath('.env'))
+        dotenv.load_dotenv(CCTwitterBot.absolutePath('.env'))
 
         consumer_key = os.getenv('CONSUMER_KEY')
         consumer_secret = os.getenv('CONSUMER_SECRET')
@@ -62,7 +76,7 @@ class CCTwitterBot:
         If there is no state, create the initial state
         """
         if path is None:
-            path = self.absolutePath('state.json')
+            path = CCTwitterBot.absolutePath('state.json')
         if not os.path.exists(path):
             self.state = set()
             self.dumpState()
@@ -76,7 +90,7 @@ class CCTwitterBot:
         If there is no path, use the default path ('./state.json') 
         """
         if path is None:
-            path = self.absolutePath('state.json')
+            path = CCTwitterBot.absolutePath('state.json')
         stateFile = open(path, 'w')
         rawState = { 'published' : [h for h in self.state] }
         json.dump(rawState, stateFile)
@@ -129,7 +143,7 @@ class CCTwitterBot:
     def tweetImg(self, imgFile, post):
         """Tweet an image with the Twitter API"""
         self.log('Sending tweet')
-        self.api.update_with_media(self.absolutePath('test.png'), post['post_url'], file=imgFile, )
+        # self.api.update_with_media(CCTwitterBot.absolutePath('test.png'), post['post_url'], file=imgFile, )
         self.log('Successuflly sent tweet')
 
     def process(self):
@@ -154,5 +168,6 @@ class CCTwitterBot:
                 self.log('ERROR: Failed to send tweet', isError=True)
                 break
 
-bot = CCTwitterBot()
-bot.process()
+if __name__ == "__main__":
+    bot = CCTwitterBot()
+    bot.process()
