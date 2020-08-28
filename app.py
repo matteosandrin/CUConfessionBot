@@ -1,15 +1,13 @@
 from flask import Flask
 from bot import CCTwitterBot
-import threading
 
 app = Flask(__name__)
 
 @app.route('/update')
 def update():
     bot = CCTwitterBot()
-    thread = threading.Thread(target=bot.process)
-    thread.start()
-    return 'Bot is updating!'
+    bot.process()
+    return 'The bot was updated!'
 
 @app.route('/logs')
 def logs():

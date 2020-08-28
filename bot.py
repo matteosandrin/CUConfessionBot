@@ -143,7 +143,7 @@ class CCTwitterBot:
     def tweetImg(self, imgFile, post):
         """Tweet an image with the Twitter API"""
         CCTwitterBot.log('Sending tweet')
-        # self.api.update_with_media(CCTwitterBot.absolutePath('test.png'), post['post_url'], file=imgFile, )
+        self.api.update_with_media(CCTwitterBot.absolutePath('test.png'), post['post_url'], file=imgFile, )
         CCTwitterBot.log('Successuflly sent tweet')
 
     def process(self):
@@ -162,7 +162,7 @@ class CCTwitterBot:
                     text = self.deEmojify(post['text'])
                     imgFile = self.convertToImg(text)
                     self.tweetImg(imgFile, post)
-                    time.sleep(1)
+                    time.sleep(0.5)
                 self.updateState(post)
             except:
                 CCTwitterBot.log('ERROR: Failed to send tweet', isError=True)
