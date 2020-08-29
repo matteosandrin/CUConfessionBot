@@ -8,6 +8,7 @@ import time
 import dotenv
 from typing import List
 from weasyprint import HTML, CSS
+from weasyprint.fonts import FontConfiguration
 from datetime import datetime
 
 class CCTwitterBot:
@@ -116,36 +117,17 @@ class CCTwitterBot:
         matches = list(re.finditer(r'([\r\n]+|^)(\d{4,7})(\.)', text))
         return len(matches) > 0
 
-    def deEmojify(self, text):
-        regrex_pattern = re.compile(pattern = "["
-            u"\U0001F600-\U0001F64F"  # emoticons
-            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
-            u"\U0001F680-\U0001F6FF"  # transport & map symbols
-            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
-            u"\U00002500-\U00002BEF"  # chinese char
-            u"\U00002702-\U000027B0"
-            u"\U00002702-\U000027B0"
-            u"\U000024C2-\U0001F251"
-            u"\U0001f926-\U0001f937"
-            u"\U00010000-\U0010ffff"
-            u"\u2640-\u2642"
-            u"\u2600-\u2B55"
-            u"\u200d"
-            u"\u23cf"
-            u"\u23e9"
-            u"\u231a"
-            u"\ufe0f"  # dingbats
-            u"\u3030"
-            "]+", flags = re.UNICODE)
-        return regrex_pattern.sub(r'',text)
-
     def convertToImg(self, confession: str):
         """Render the confession text into an HTML page and convert it to a PNG image"""
         text = confession.replace('\n', '<br>')
         htmlStr = self.template.replace('INSERT_TEXT_HERE', text)
         
-        css = CSS(string='@page { width: 664px; margin: 0px; padding: 0px }')
-        html = HTML(string=htmlStr).render(stylesheets=[css])
+        fontConfig = FontConfiguration()
+        fontString = "@font-face {{ font-family: \"Symbola\"; src: url(\"file://{}\") format(\"opentype\"); }}"
+        fontString = fontString.format(CCTwitterBot.absolutePath('./Symbola.otf'))
+        fontCss = CSS(string=fontString, font_config=fontConfig)
+        css = CSS(string='@page { width: 664px; margin: 0px; padding: 0px }', font_config=fontConfig)
+        html = HTML(string=htmlStr).render(stylesheets=[css, fontCss], font_config=fontConfig)
         for page in html.pages:
             for child in page._page_box.descendants():
                 if child.element_tag == 'body':
@@ -173,7 +155,7 @@ class CCTwitterBot:
         for post in newPosts[::-1]:
             try:
                 if self.isConfession(post):
-                    text = self.deEmojify(post['text'])
+                    text = post['text']
                     imgFile = self.convertToImg(text)
                     self.tweetImg(imgFile, post)
                     time.sleep(0.5)
