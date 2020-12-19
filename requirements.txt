@@ -3,3 +3,4 @@ tweepy==3.9.0
 WeasyPrint==51
 python-dotenv==0.14.0
 Flask==1.1.2
+arrow==0.17.0

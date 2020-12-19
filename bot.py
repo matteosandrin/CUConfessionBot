@@ -126,13 +126,16 @@ class CCTwitterBot:
         fontString = "@font-face {{ font-family: \"Symbola\"; src: url(\"file://{}\") format(\"opentype\"); }}"
         fontString = fontString.format(CCTwitterBot.absolutePath('./Symbola.otf'))
         fontCss = CSS(string=fontString, font_config=fontConfig)
+
         css = CSS(string='@page { width: 664px; margin: 0px; padding: 0px }', font_config=fontConfig)
         html = HTML(string=htmlStr).render(stylesheets=[css, fontCss], font_config=fontConfig)
+
         for page in html.pages:
             for child in page._page_box.descendants():
                 if child.element_tag == 'body':
                     page._page_box.height = child.height
                     page.height = child.height
+                    
         imgBytes, _ , _ = html.write_png(None, resolution=150)
         return io.BytesIO(imgBytes)  
 
@@ -141,6 +144,12 @@ class CCTwitterBot:
         CCTwitterBot.log('Sending tweet')
         self.api.update_with_media(CCTwitterBot.absolutePath('test.png'), post['post_url'], file=imgFile, )
         CCTwitterBot.log('Successuflly sent tweet')
+
+    def notifyOwner(self, message, recipient="TeoSandrin"):
+        CCTwitterBot.log('Sending direct message to {}...'.format(recipient))
+        user = self.api.get_user(recipient)
+        self.api.send_direct_message(user.id, message)
+        CCTwitterBot.log('Successfully sent direct message.')
 
     def process(self):
         CCTwitterBot.log('Starting at {}'.format(datetime.now().isoformat()))
