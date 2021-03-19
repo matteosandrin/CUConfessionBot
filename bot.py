@@ -169,8 +169,8 @@ class CCTwitterBot:
                     self.tweetImg(imgFile, post)
                     time.sleep(0.5)
                 self.updateState(post)
-            except:
-                CCTwitterBot.log('ERROR: Failed to send tweet', isError=True)
+            except Exception as e:
+                CCTwitterBot.log('ERROR: Failed to send tweet: {}'.format(e), isError=True)
                 break
 
 if __name__ == "__main__":
