@@ -6,6 +6,7 @@ import tweepy
 import io
 import time
 import dotenv
+import traceback
 from typing import List
 from weasyprint import HTML, CSS
 from weasyprint.fonts import FontConfiguration
@@ -28,6 +29,7 @@ class CCTwitterBot:
         logFile = open(CCTwitterBot.absolutePath('bot.log'), 'a')
         if isError:
             print('[!] ' + text, file=logFile)
+            traceback.print_exc(file=logFile)
         else:
             print('[+] ' + text, file=logFile)
         logFile.close()
@@ -114,6 +116,8 @@ class CCTwitterBot:
     def isConfession(self, post):
         """Returns True if the post is a confession"""
         text = post['text']
+        if text is None:
+            return False
         matches = list(re.finditer(r'([\r\n]+|^)(\d{4,7})(\.)', text))
         return len(matches) > 0
 
