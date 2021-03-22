@@ -6,6 +6,7 @@ import json
 
 app = Flask(__name__)
 EXPIRY_FILE = CCTwitterBot.absolutePath('expiry.json')
+LOGS_TEMPLATE = open(CCTwitterBot.absolutePath('templates/logs.html')).read()
 
 @app.route('/update')
 def update():
@@ -19,8 +20,8 @@ def update():
 @app.route('/logs')
 def logs():
     lines = CCTwitterBot.getLogs()
-    html = lines.replace('\n', '<br>')
-    html = '<span style="font-family: Monaco">{}</span>'.format(html)
+    html_lines = lines.replace('\n', '<br>')
+    html = LOGS_TEMPLATE.replace('INSERT_LOGS_HERE', html_lines)
     return html
 
 def isExpired():

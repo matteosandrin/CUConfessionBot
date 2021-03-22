@@ -16,7 +16,7 @@ class CCTwitterBot:
 
     def __init__(self):
         self.pageName = 'columbiaconfessionz'
-        self.template = open(CCTwitterBot.absolutePath('template.html')).read()
+        self.template = open(CCTwitterBot.absolutePath('templates/post.html')).read()
         self.loadState()
         self.setupApi()
 
